@@ -2,10 +2,12 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>Todo 列表 V2.0（修正版）</title>
+    <title>Todo 列表 V2.0（数据驱动·完整版）</title>
     <style>
         body { font-family: "Microsoft YaHei", sans-serif; max-width: 420px; margin: 40px auto; }
-        #todoList li { margin: 4px 0; }
+        #todoList li { margin: 4px 0; cursor: pointer; }
+        #todoList li.done { text-decoration: line-through; color: #999; }
+        #todoList li button { margin-left: 8px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -15,44 +17,65 @@
     <ul id="todoList"></ul>
 
     <script>
-        // ===== 修正后的 V2.0 代码 =====
-        (function () {
-            'use strict';
+        // ===== 单一数据源：todos 数组是唯一状态来源，DOM 由 render() 投影 =====
+        let todos = [];
 
-            var todos = [];
+        // 添加：展开生成新数组（不可变更新）
+        function addTodo(text) {
+            text = text.trim();
+            if (text === '') return; // 空输入（含纯空格）不添加
+            todos = [...todos, { id: Date.now(), text, completed: false }];
+            render();
+        }
 
-            function addTodo() {
-                var input = document.getElementById('todoInput');
-                var text = input.value.trim();
+        // 删除：filter 生成新数组
+        function removeTodo(id) {
+            todos = todos.filter(t => t.id !== id);
+            render();
+        }
 
-                if (text === '') {
-                    alert('待办事项不能为空');
-                    input.focus();
-                    return;
-                }
+        // 切换：map + 展开生成新对象
+        function toggleTodo(id) {
+            todos = todos.map(t => t.id === id ? { ...t, completed: !t.completed } : t);
+            render();
+        }
 
-                todos.push(text);
-                displayTodos();
-                input.value = '';
-                input.focus();
-            }
+        // ★ 记录3（脱离AI小改）：请脱离AI独立在此实现 clearCompleted()
+        // 功能：删除所有 completed === true 的任务，改数据后记得 render()
 
-            function displayTodos() {
-                var list = document.getElementById('todoList');
-                var fragment = document.createDocumentFragment();
+        // 渲染：DOM 是 todos 的投影，不使用 innerHTML 拼接文本
+        function render() {
+            const list = document.getElementById('todoList');
+            list.innerHTML = '';
 
-                todos.forEach(function (todo) {
-                    var li = document.createElement('li');
-                    li.textContent = todo;
-                    fragment.appendChild(li);
+            todos.forEach(t => {
+                const li = document.createElement('li');
+                li.textContent = t.text;
+                if (t.completed) li.className = 'done';
+
+                // 点击整行切换完成状态
+                li.addEventListener('click', () => toggleTodo(t.id));
+
+                // 删除按钮（阻止冒泡，避免误触发行切换）
+                const del = document.createElement('button');
+                del.textContent = '删除';
+                del.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    removeTodo(t.id);
                 });
+                li.appendChild(del);
 
-                list.innerHTML = '';
-                list.appendChild(fragment);
-            }
+                list.appendChild(li);
+            });
+        }
 
-            document.getElementById('addBtn').addEventListener('click', addTodo);
-        })();
+        document.getElementById('addBtn').addEventListener('click', () => {
+            const input = document.getElementById('todoInput');
+            addTodo(input.value);
+            input.value = '';
+        });
+
+        render();
     </script>
 </body>
 </html>
