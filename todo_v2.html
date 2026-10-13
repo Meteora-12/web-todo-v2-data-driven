@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Todo 列表 V2.0（修正版）</title>
+    <style>
+        body { font-family: "Microsoft YaHei", sans-serif; max-width: 420px; margin: 40px auto; }
+        #todoList li { margin: 4px 0; }
+    </style>
+</head>
+<body>
+    <h2>Todo 列表</h2>
+    <input type="text" id="todoInput" placeholder="请输入待办事项">
+    <button id="addBtn">添加</button>
+    <ul id="todoList"></ul>
+
+    <script>
+        // ===== 修正后的 V2.0 代码 =====
+        (function () {
+            'use strict';
+
+            var todos = [];
+
+            function addTodo() {
+                var input = document.getElementById('todoInput');
+                var text = input.value.trim();
+
+                if (text === '') {
+                    alert('待办事项不能为空');
+                    input.focus();
+                    return;
+                }
+
+                todos.push(text);
+                displayTodos();
+                input.value = '';
+                input.focus();
+            }
+
+            function displayTodos() {
+                var list = document.getElementById('todoList');
+                var fragment = document.createDocumentFragment();
+
+                todos.forEach(function (todo) {
+                    var li = document.createElement('li');
+                    li.textContent = todo;
+                    fragment.appendChild(li);
+                });
+
+                list.innerHTML = '';
+                list.appendChild(fragment);
+            }
+
+            document.getElementById('addBtn').addEventListener('click', addTodo);
+        })();
+    </script>
+</body>
+</html>
