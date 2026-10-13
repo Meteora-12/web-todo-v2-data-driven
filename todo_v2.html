@@ -25,26 +25,45 @@
 
     <script>
         // ===== 单一数据源：todos 数组是唯一状态来源，DOM 由 render() 投影 =====
-        let todos = [];
+        let todos = load();
         let filter = 'all'; // 视图状态：不保存，刷新回到 'all'
+
+        // 持久化：保存到 localStorage
+        function save() {
+            localStorage.setItem('todos', JSON.stringify(todos));
+        }
+
+        // 持久化：启动时从 localStorage 恢复
+        function load() {
+            const raw = localStorage.getItem('todos');
+            if (!raw) return [];
+            try {
+                return JSON.parse(raw);
+            } catch (e) {
+                return []; // 数据损坏时兜底，避免脚本崩溃
+            }
+        }
 
         // 添加：展开生成新数组（不可变更新）
         function addTodo(text) {
             text = text.trim();
             if (text === '') return; // 空输入（含纯空格）不添加
             todos = [...todos, { id: Date.now(), text, completed: false }];
+            save();
             render();
         }
 
         // 删除：filter 生成新数组
         function removeTodo(id) {
             todos = todos.filter(t => t.id !== id);
+            save();
             render();
         }
 
         // 切换：map + 展开生成新对象
         function toggleTodo(id) {
             todos = todos.map(t => t.id === id ? { ...t, completed: !t.completed } : t);
+            save();
             render();
         }
 
