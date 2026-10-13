@@ -67,8 +67,12 @@
             render();
         }
 
-        // ★ 记录3（脱离AI小改）：请脱离AI独立在此实现 clearCompleted()
-        // 功能：删除所有 completed === true 的任务，改数据后记得 render()
+        // 删除所有已完成任务
+        function clearCompleted() {
+            todos = todos.filter(t => !t.completed);
+            save();
+            render();
+        }
 
         // 筛选：视图状态切换，只重渲染，不保存
         function setFilter(f) {
