@@ -56,6 +56,7 @@
 
         // 删除：filter 生成新数组
         function removeTodo(id) {
+            console.log('removeTodo', id);
             todos = todos.filter(t => t.id !== id);
             save();
             render();
@@ -63,6 +64,7 @@
 
         // 切换：map + 展开生成新对象
         function toggleTodo(id) {
+            console.log('toggleTodo', id);
             todos = todos.map(t => t.id === id ? { ...t, completed: !t.completed } : t);
             save();
             render();
