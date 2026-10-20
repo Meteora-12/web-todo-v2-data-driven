@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Todo 列表（缺陷版——用于任务2五步法诊断）</title>
+    <style>
+        body { font-family: "Microsoft YaHei", sans-serif; max-width: 420px; margin: 40px auto; }
+        #todoList li { margin: 4px 0; cursor: pointer; }
+        #todoList li.done { text-decoration: line-through; color: #999; }
+        #todoList li button { margin-left: 8px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h2>Todo 列表（缺陷版）</h2>
+    <p style="color:#c00;">诊断用：在 deleteTodo / toggleTodo 里各加一行 console.log，再点删除按钮观察控制台。</p>
+    <input type="text" id="todoInput" placeholder="请输入待办事项">
+    <button id="addBtn">添加</button>
+
+    <div class="filters">
+        <button data-filter="all">全部</button>
+        <button data-filter="active">未完成</button>
+        <button data-filter="done">已完成</button>
+    </div>
+
+    <ul id="todoList"></ul>
+
+    <script>
+        let todos = load();
+        let filter = 'all';
+
+        function save() {
+            localStorage.setItem('todos', JSON.stringify(todos));
+        }
+        function load() {
+            const raw = localStorage.getItem('todos');
+            if (!raw) return [];
+            try { return JSON.parse(raw); }
+            catch (e) { return []; }
+        }
+
+        function addTodo(text) {
+            text = text.trim();
+            if (text === '') return;
+            todos = [...todos, { id: String(Date.now()), text, completed: false }];
+            save();
+            render();
+        }
+
+        // 诊断提示：在这里加  console.log('deleteTodo', id);
+        function deleteTodo(id) {
+            todos = todos.filter(t => t.id !== id);
+            save();
+            render();
+        }
+
+        // 诊断提示：在这里加  console.log('toggleTodo', id);
+        function toggleTodo(id) {
+            todos = todos.map(t => t.id === id ? { ...t, completed: !t.completed } : t);
+            save();
+            render();
+        }
+
+        function setFilter(f) {
+            filter = f;
+            render();
+        }
+
+        function render() {
+            const list = document.getElementById('todoList');
+            list.innerHTML = '';
+
+            const visible = todos.filter(t => {
+                if (filter === 'done') return t.completed;
+                if (filter === 'active') return !t.completed;
+                return true;
+            });
+
+            visible.forEach(t => {
+                const li = document.createElement('li');
+                li.dataset.id = t.id;
+                li.textContent = t.text;
+                if (t.completed) li.className = 'done';
+
+                const del = document.createElement('button');
+                del.textContent = '删除';
+                del.dataset.action = 'delete';
+                li.appendChild(del);
+
+                list.appendChild(li);
+            });
+        }
+
+        // ===== 缺陷代码（来自题目）：删除后没有 return，会“贯穿”到 toggleTodo =====
+        const list = document.getElementById('todoList');
+        list.addEventListener('click', (e) => {
+            if (!(e.target instanceof Element)) return;
+            const item = e.target.closest('li');
+            if (!item || !list.contains(item)) return;
+            const id = item.dataset.id;
+            if (!id) return;
+            const delBtn = e.target.closest('[data-action="delete"]');
+            if (delBtn && item.contains(delBtn)) {
+                deleteTodo(id);
+            }
+            toggleTodo(id);   // ← 缺陷：点删除时，删完仍会执行到这里
+        });
+
+        document.getElementById('addBtn').addEventListener('click', () => {
+            const input = document.getElementById('todoInput');
+            addTodo(input.value);
+            input.value = '';
+        });
+
+        document.querySelectorAll('.filters button').forEach(btn => {
+            btn.addEventListener('click', () => setFilter(btn.dataset.filter));
+        });
+
+        render();
+    </script>
+</body>
+</html>
