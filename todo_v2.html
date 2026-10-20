@@ -70,6 +70,15 @@
             render();
         }
 
+        // 编辑：map + 展开生成新对象，只改 text（任务3 独立迁移）
+        function editTodo(id, newText) {
+            newText = newText.trim();
+            if (newText === '') return; // 空文字不改
+            todos = todos.map(t => t.id === id ? { ...t, text: newText } : t);
+            save();
+            render();
+        }
+
         // 删除所有已完成任务
         function clearCompleted() {
             todos = todos.filter(t => !t.completed);
@@ -106,6 +115,11 @@
                 del.dataset.action = 'delete'; // 关键：标记这是删除按钮
                 li.appendChild(del);
 
+                const edit = document.createElement('button');
+                edit.textContent = '编辑';
+                edit.dataset.action = 'edit';  // 关键：标记这是编辑按钮
+                li.appendChild(edit);
+
                 list.appendChild(li);
             });
         }
@@ -123,6 +137,13 @@
             if (delBtn && item.contains(delBtn)) {
                 removeTodo(id);  // 点删除按钮 → 只删除
                 return;          // 关键：删除后立即返回，不再往下切换
+            }
+
+            const editBtn = e.target.closest('[data-action="edit"]');
+            if (editBtn && item.contains(editBtn)) {
+                const newText = prompt('修改任务', item.textContent);
+                editTodo(id, newText); // 点编辑按钮 → 改文字
+                return;                // 改完立即返回，不再往下切换
             }
 
             toggleTodo(id);      // 否则视为点击任务本身 → 切换完成状态
