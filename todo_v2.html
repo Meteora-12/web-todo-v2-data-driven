@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>Todo 列表 V2.0（数据驱动·完整版）</title>
+    <title>Todo 列表 V2.0（事件委托版）</title>
     <style>
         body { font-family: "Microsoft YaHei", sans-serif; max-width: 420px; margin: 40px auto; }
         #todoList li { margin: 4px 0; cursor: pointer; }
@@ -48,7 +48,8 @@
         function addTodo(text) {
             text = text.trim();
             if (text === '') return; // 空输入（含纯空格）不添加
-            todos = [...todos, { id: Date.now(), text, completed: false }];
+            // id 用字符串存：因为 dataset.id 读出来一定是字符串，保持一致避免严格比较 !== 永远不相等
+            todos = [...todos, { id: String(Date.now()), text, completed: false }];
             save();
             render();
         }
@@ -80,7 +81,8 @@
             render();
         }
 
-        // 渲染：DOM 是 todos 的投影，不使用 innerHTML 拼接文本
+        // 渲染：DOM 是 todos 的投影。关键改动——不再给每个 li / 按钮单独绑监听，
+        // 而是把 id 挂到 dataset、把删除按钮用 data-action 标记，交给父容器统一处理。
         function render() {
             const list = document.getElementById('todoList');
             list.innerHTML = '';
@@ -93,24 +95,36 @@
 
             visible.forEach(t => {
                 const li = document.createElement('li');
+                li.dataset.id = t.id;          // 关键：任务 id 挂到 DOM 上，供委托读取
                 li.textContent = t.text;
                 if (t.completed) li.className = 'done';
 
-                // 点击整行切换完成状态
-                li.addEventListener('click', () => toggleTodo(t.id));
-
-                // 删除按钮（阻止冒泡，避免误触发行切换）
                 const del = document.createElement('button');
                 del.textContent = '删除';
-                del.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    removeTodo(t.id);
-                });
+                del.dataset.action = 'delete'; // 关键：标记这是删除按钮
                 li.appendChild(del);
 
                 list.appendChild(li);
             });
         }
+
+        // ===== 事件委托：只在父容器 ul 上绑一个 click，统一处理切换 / 删除 =====
+        const list = document.getElementById('todoList');
+        list.addEventListener('click', (e) => {
+            if (!(e.target instanceof Element)) return;       // 边界防御①：排除文本节点
+            const item = e.target.closest('li');              // 找到被点中的任务 li
+            if (!item || !list.contains(item)) return;        // 边界防御②：不在列表内则忽略
+            const id = item.dataset.id;                       // 从 dataset 取任务 id
+            if (!id) return;                                  // 边界防御③：无 id 则忽略
+
+            const delBtn = e.target.closest('[data-action="delete"]');
+            if (delBtn && item.contains(delBtn)) {
+                removeTodo(id);  // 点删除按钮 → 只删除
+                return;          // 关键：删除后立即返回，不再往下切换
+            }
+
+            toggleTodo(id);      // 否则视为点击任务本身 → 切换完成状态
+        });
 
         document.getElementById('addBtn').addEventListener('click', () => {
             const input = document.getElementById('todoInput');
