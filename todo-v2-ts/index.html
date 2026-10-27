@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Todo 列表 V2.0（TypeScript 版）</title>
+    <style>
+        body { font-family: "Microsoft YaHei", sans-serif; max-width: 420px; margin: 40px auto; }
+        #todoList li { margin: 4px 0; cursor: pointer; }
+        #todoList li.done { text-decoration: line-through; color: #999; }
+        #todoList li button { margin-left: 8px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h2>Todo 列表</h2>
+    <input type="text" id="todoInput" placeholder="请输入待办事项">
+    <button id="addBtn">添加</button>
+
+    <div class="filters">
+        <button data-filter="all">全部</button>
+        <button data-filter="active">未完成</button>
+        <button data-filter="done">已完成</button>
+    </div>
+
+    <ul id="todoList"></ul>
+
+    <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
