@@ -1,0 +1,266 @@
+:root {
+  --bg: #f3f5f9;
+  --card: #ffffff;
+  --ink: #1f2937;
+  --muted: #6b7280;
+  --line: #e5e7eb;
+  --brand: #4f6ef7;
+  --brand-dark: #3d59d8;
+  --danger: #dc2626;
+  --ok: #15803d;
+  font-family: 'Segoe UI', 'Microsoft YaHei', system-ui, sans-serif;
+  color: var(--ink);
+  background: var(--bg);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 48px 16px;
+  background: radial-gradient(circle at 20% 0%, #e4ebff 0, var(--bg) 45%);
+}
+
+.app {
+  width: 100%;
+  max-width: 680px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 32px;
+  box-shadow: 0 18px 50px rgba(31, 41, 55, 0.09);
+}
+
+.app-header h1 {
+  margin: 6px 0 4px;
+  font-size: 30px;
+  letter-spacing: 1px;
+}
+
+.badge {
+  display: inline-block;
+  margin: 0;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: #eef1ff;
+  color: var(--brand);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.subtitle {
+  margin: 0 0 20px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.todo-form {
+  display: flex;
+  gap: 10px;
+}
+
+.todo-form input {
+  flex: 1;
+  padding: 12px 14px;
+  font-size: 15px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.todo-form input:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(79, 110, 247, 0.15);
+}
+
+button {
+  font-family: inherit;
+  border-radius: 9px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-size: 13px;
+  padding: 9px 14px;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.todo-form button {
+  background: var(--brand);
+  color: #fff;
+  font-size: 15px;
+  padding: 0 22px;
+}
+
+.todo-form button:hover {
+  background: var(--brand-dark);
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 22px 0 10px;
+  flex-wrap: wrap;
+}
+
+.filters {
+  display: flex;
+  gap: 6px;
+}
+
+.filter {
+  background: #f3f4f6;
+  color: var(--muted);
+}
+
+.filter.active {
+  background: #eef1ff;
+  color: var(--brand);
+  border-color: #c7d2fe;
+  font-weight: 600;
+}
+
+.counter {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.todo-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.todo-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fcfdff;
+}
+
+.todo-item.done .todo-text {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+
+.todo-item.done {
+  background: #f8faf8;
+}
+
+.todo-text {
+  flex: 1;
+  word-break: break-word;
+  font-size: 15px;
+}
+
+.actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.actions button {
+  background: #fff;
+  border-color: var(--line);
+  color: var(--ink);
+}
+
+.actions .toggle:hover {
+  border-color: var(--ok);
+  color: var(--ok);
+}
+
+.actions .edit:hover {
+  border-color: var(--brand);
+  color: var(--brand);
+}
+
+.actions .delete:hover {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.edit-input {
+  flex: 1;
+  padding: 8px 10px;
+  font-size: 15px;
+  border: 1px solid var(--brand);
+  border-radius: 8px;
+  outline: none;
+}
+
+.save {
+  background: var(--brand);
+  color: #fff;
+}
+
+.cancel {
+  background: #fff;
+  border-color: var(--line);
+}
+
+.empty {
+  padding: 26px;
+  text-align: center;
+  color: var(--muted);
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+  margin: 0;
+}
+
+.app-footer {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.clear {
+  background: #fff;
+  border-color: var(--line);
+  color: var(--muted);
+}
+
+.clear:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.state-panel {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.state-panel summary {
+  cursor: pointer;
+  user-select: none;
+}
+
+.state-panel pre {
+  margin: 10px 0 0;
+  padding: 12px;
+  max-height: 360px;
+  overflow: auto;
+  background: #0f172a;
+  color: #d1e0ff;
+  border-radius: 10px;
+  font-family: Consolas, 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.5;
+}
